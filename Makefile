@@ -15,10 +15,12 @@ dyndnsup: src/dyndnsup.sh
 all: dyndnsup
 
 install: all
-	@install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(ETCDIR) $(DESTDIR)$(MANDIR)
-	@install -D -m 0755 dyndnsup $(DESTDIR)$(BINDIR)/dyndnsup
-	@install -D -m 0600 src/dyndnsup.conf $(DESTDIR)$(ETCDIR)/dyndnsup.conf
-	@install -D -m 0644 src/dyndnsup.1 $(DESTDIR)$(MANDIR)/man1/dyndnsup.1
+	@install -d $(DESTDIR)$(BINDIR)
+	@install -m 0755 dyndnsup $(DESTDIR)$(BINDIR)/dyndnsup
+	@install -d $(DESTDIR)$(ETCDIR)
+	@install -m 0600 src/dyndnsup.conf $(DESTDIR)$(ETCDIR)/dyndnsup.conf
+	@install -d $(DESTDIR)$(MANDIR)/man1
+	@install -m 0644 src/dyndnsup.1 $(DESTDIR)$(MANDIR)/man1/dyndnsup.1
 
 clean:
 	@rm -f dyndnsup
