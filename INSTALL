@@ -1,0 +1,19 @@
+INSTALL
+
+
+1 - Use the Makefile to install files
+    
+    $ sudo make install BINDIR=/opt/sbin \
+                        ETCDIR=/opt/etc \
+                        MANDIR=opt/man \
+                        SHEEBANG=/usr/local/bin/bash
+
+
+2 - Edit the config file (dyndnsup.conf) and setup to your needs
+
+
+3 - Add a crontab line for doing auto-updates every 15 days
+
+    $ sudo crontab -e
+
+    00 00 1/16 * * /opt/sbin/dyndnsup 2>&1 >/var/log/dyndnsup.log
