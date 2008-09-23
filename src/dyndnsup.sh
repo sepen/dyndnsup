@@ -1,4 +1,4 @@
-#!#SHEEBANG#
+#!#SHEBANG#
 #
 # Copyright (c) 2007 by Jose V. Beneyto, sepen at users dot sourceforge dot net
 #

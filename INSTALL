@@ -6,7 +6,7 @@ INSTALL
     $ sudo make install BINDIR=/opt/sbin \
                         ETCDIR=/opt/etc \
                         MANDIR=/opt/man \
-                        SHEEBANG=/usr/local/bin/bash
+                        SHEBANG=/usr/local/bin/bash
 
 
 2 - Edit the config file (dyndnsup.conf) and setup to your needs
