@@ -125,6 +125,12 @@ printMessage() {
   esac
 }
 
+writeLog() {
+  local date="$(date +'%D %T')"
+  local msg="$(echo $@ | sed 's|\n||g')"
+  echo -ne "[$date] $msg" >> $LOG_FILE
+}
+
 main() {
   local dd_ip=""
   if [ $# -gt 0 ]; then
@@ -141,13 +147,14 @@ main() {
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2"
+APPVERSION="0.2.1"
 
 CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
+LOG_FILE="#LOGDIR#/$APPNAME.log"
 
 DD_IP=""
 DD_RETCODE=""
 
-main $@
+main $@ | writeLog
 
 # End of File

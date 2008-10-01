@@ -5,12 +5,16 @@ DESTDIR=
 BINDIR=/usr/bin
 ETCDIR=/etc
 MANDIR=/usr/share/man
+LOGDIR=/var/log
 SHEBANG=/bin/sh
 
 .PHONY: all install clean uninstall
 
 dyndnsup: src/dyndnsup.sh
-	@sed -e "s|#SHEBANG#|$(SHEBANG)|" -e "s|#ETCDIR#|$(ETCDIR)|g" src/dyndnsup.sh > dyndnsup
+	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
+			 -e "s|#ETCDIR#|$(ETCDIR)|g" \
+			 -e "s|#LOGDIR#|$(LOGDIR)|g" \
+			 src/dyndnsup.sh > dyndnsup
 
 all: dyndnsup
 

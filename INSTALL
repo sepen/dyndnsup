@@ -16,4 +16,4 @@ INSTALL
 
     $ sudo crontab -e
 
-    00 00 1/16 * * /opt/sbin/dyndnsup 2>&1 >/var/log/dyndnsup.log
+    00 00 1/16 * * /opt/sbin/dyndnsup
