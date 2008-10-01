@@ -127,8 +127,8 @@ printMessage() {
 
 writeLog() {
   local date="$(date +'%D %T')"
-  local msg="$(echo $@ | sed 's|\n||g')"
-  echo -ne "[$date] $msg" >> $LOG_FILE
+  echo -ne "[$date] " >>$LOG_FILE
+  cat - >>$LOG_FILE
 }
 
 main() {
@@ -155,6 +155,6 @@ LOG_FILE="#LOGDIR#/$APPNAME.log"
 DD_IP=""
 DD_RETCODE=""
 
-main $@ | writeLog
+main $@ 2>&1 | writeLog
 
 # End of File
