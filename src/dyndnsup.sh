@@ -25,13 +25,8 @@ msgError() {
   exit 1
 }
 
-msgVersion() {
-  echo "$APPNAME v$APPVERSION by Jose V Beneyto"
-  exit 0
-}
-
 msgUsage() {
-  echo "Usage: $APPNAME [-v] | [-h] | [-c | --config file]"
+  echo "Usage: $APPNAME [-h] | [-v] | [-c file] | [-f ipv4]"
   echo "Read the manual for futher information: $APPNAME(1)"
   exit 0
 }
@@ -132,22 +127,24 @@ writeLog() {
 }
 
 main() {
-  local dd_ip=""
   if [ $# -gt 0 ]; then
     case $1 in
+      -v) VERBOSE=1 ;;
       -c) CONFIG_FILE="$2" ;;
+      -f) DD_IP="$2" ;;
        *) msgUsage ;;
     esac
   fi
   [ ! -r "$CONFIG_FILE" ] && msgError "can't read config file '$CONFIG_FILE'"
   . $CONFIG_FILE
-  getIP $DD_IFACE
-  updateIP "$DD_USERNAME" "$DD_PASSWORD" "$DD_SERVER" "$DD_SYSTEM" "$DD_HOSTNAME" "$DD_IP"
+  [ ! -z "$DD_IP" ] && getIP $DD_IFACE
+  updateIP "$DD_USERNAME" "$DD_PASSWORD" \
+           "$DD_SERVER" "$DD_SYSTEM" "$DD_HOSTNAME" "$DD_IP"
   printMessage $DD_RETCODE
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.1"
+APPVERSION="0.2.2"
 
 CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 LOG_FILE="#LOGDIR#/$APPNAME.log"
@@ -155,6 +152,9 @@ LOG_FILE="#LOGDIR#/$APPNAME.log"
 DD_IP=""
 DD_RETCODE=""
 
+VERBOSE=0
+
 main $@ 2>&1 | writeLog
+[ $VERBOSE -eq 1 ] && printMessage $DD_RETCODE
 
 # End of File
