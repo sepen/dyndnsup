@@ -29,18 +29,18 @@ install: all
 	@install -m 0755 dyndnsup $(DESTDIR)$(BINDIR)/dyndnsup
 	@install -m 0755 ck4dns $(DESTDIR)$(BINDIR)/ck4dns
 	@install -d $(DESTDIR)$(ETCDIR)
-	@install -m 0600 src/dyndnsup.conf $(DESTDIR)$(ETCDIR)/dyndnsup.conf
-	@install -m 0600 src/ck4dns.conf $(DESTDIR)$(ETCDIR)/ck4dns.conf
+	@install -m 0600 src/*.conf.sample $(DESTDIR)$(ETCDIR)
 	@install -d $(DESTDIR)$(MANDIR)/man1
-	@install -m 0644 src/dyndnsup.1 $(DESTDIR)$(MANDIR)/man1/dyndnsup.1
+	@install -m 0644 src/*.1 $(DESTDIR)$(MANDIR)/man1
+	@cd $(DESTDIR)$(MANDIR)/man1; for i in *; do gzip -9 $$i; done
 
 clean:
 	@rm -f dyndnsup ck4dns
 	@rm -f */*~ *~
 
 uninstall:
-	@rm -f $(DESTDIR)$(BINDIR)/{dyndnsup,ck4dns}
-	@rm -f $(DESTDIR)$(ETCDIR)/dyndnsup.conf,ck4dns.conf}
-	@rm -f $(DESTDIR)$(MANDIR)/man1/dyndnsup.1
+	@rm $(DESTDIR)$(BINDIR)/{dyndnsup,ck4dns}
+	@rm -r $(DESTDIR)$(ETCDIR)
+	@rm $(DESTDIR)$(MANDIR)/man1/{dyndnsup.1,ck4dns.1}
 
 # End of file

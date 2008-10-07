@@ -1,6 +1,6 @@
 #!#SHEBANG#
 #
-# Copyright (c) 2007 by Jose V. Beneyto, sepen at users dot sourceforge dot net
+# Copyright (c) 2008 by Jose V. Beneyto, sepen at users dot sourceforge dot net
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
