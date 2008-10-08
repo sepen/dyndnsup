@@ -19,7 +19,7 @@ dyndnsup: src/dyndnsup.sh
 			 src/dyndnsup.sh > dyndnsup
 
 dyndnsup.1.gz:
-	@cp src/dyndnsup.1 .; gunzip dyndnsup.1
+	@cp src/dyndnsup.1 .; gzip -9 dyndnsup.1
 
 ck4dns: src/ck4dns.sh
 	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
