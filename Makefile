@@ -34,7 +34,7 @@ install: dyndnsup dyndnsup.1.gz ck4dns
 	@install -d $(DESTDIR)$(ETCDIR)
 	@install -m 0600 src/*.conf.sample $(DESTDIR)$(ETCDIR)
 	@install -d $(DESTDIR)$(MANDIR)/man1
-	@install -m 0644 src/*.1.gz $(DESTDIR)$(MANDIR)/man1
+	@install -m 0644 *.1.gz $(DESTDIR)$(MANDIR)/man1
 
 clean:
 	@rm -f dyndnsup dyndnsup.1.gz ck4dns
