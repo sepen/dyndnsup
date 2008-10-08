@@ -31,6 +31,10 @@ msgUsage() {
   exit 0
 }
 
+checkRoot() {
+  [ "$(id -u)" != "0" ] && msgError "you need to be root to do this."
+}
+
 getIP() {
   local iface="$1"
   local platform="$(uname)"
@@ -154,6 +158,7 @@ DD_RETCODE=""
 
 VERBOSE=0
 
+checkRoot
 main $@ 2>&1 | writeLog
 [ $VERBOSE -eq 1 ] && printMessage $DD_RETCODE
 
