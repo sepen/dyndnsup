@@ -42,14 +42,15 @@ main() {
   [ ! -r "$CONFIG_FILE" ] && msgError "can't read config file '$CONFIG_FILE'"
   while read line; do
     if [ "$(echo $line | grep -ve '^#')" ]; then
-    dhost="$(echo $line | awk '{print $1}')"
-    dconf="$(echo $line | awk '{print $2}')"
-    [ -z "$dhost" -a -z "$dconf" ] && msgError "while parsing '$CONFIG_FILE'"
-    [ ! -r "$CONFIG_FILE" ] && msgError "can't read config file '$dconf'"
-    host $i 2>&1 >/dev/null
-    if [ $? -ne 0 ]; then
+      dhost="$(echo $line | awk '{print $1}')"
+      dconf="$(echo $line | awk '{print $2}')"
+      [ -z "$dhost" -a -z "$dconf" ] && msgError "while parsing '$CONFIG_FILE'"
+      [ ! -r "$CONFIG_FILE" ] && msgError "can't read config file '$dconf'"
+      host $i 2>&1 >/dev/null
+      if [ $? -ne 0 ]; then
         $DYNDNSUP_BIN -v -c $dconf
-  fi
+      fi
+    fi
   done < $CONFIG_FILE
 }
 
