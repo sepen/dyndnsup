@@ -7,15 +7,17 @@ ETCDIR=/etc/dyndnsup
 MANDIR=/usr/share/man
 LOGDIR=/var/log
 SHEBANG=/bin/sh
+PATH_ENV=
 
 .PHONY: all install clean uninstall
 
-all: dyndnsup dyndnsup.1 ck4dns
+all: dyndnsup dyndnsup.1.gz ck4dns
 
 dyndnsup: src/dyndnsup.sh
 	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
 			 -e "s|#ETCDIR#|$(ETCDIR)|g" \
 			 -e "s|#LOGDIR#|$(LOGDIR)|g" \
+			 -e "s|#PATH_ENV#|$(PATH_ENV)|g" \
 			 src/dyndnsup.sh > dyndnsup
 
 dyndnsup.1.gz:
@@ -25,6 +27,7 @@ ck4dns: src/ck4dns.sh
 	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
 			 -e "s|#ETCDIR#|$(ETCDIR)|g" \
 			 -e "s|#DYNDNSUP#|$(DESTDIR)$(BINDIR)/dyndnsup|g" \
+			 -e "s|#PATH_ENV#|$(PATH_ENV)|g" \
 			 src/ck4dns.sh > ck4dns
 
 install: dyndnsup dyndnsup.1.gz ck4dns

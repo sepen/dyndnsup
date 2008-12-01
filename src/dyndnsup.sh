@@ -63,7 +63,7 @@ updateIP() {
   local dd_system="$4"
   local dd_hostname="$5"
   local dd_ip="$6"
-	DD_RETCODE="$(curl -s "http://${dd_user}:${dd_pass}@$dd_server/nic/update?system=$dd_system&hostname=$dd_hostname&myip=$dd_ip" |  awk '{print $1}')"
+  DD_RETCODE="$(curl -s "http://${dd_user}:${dd_pass}@$dd_server/nic/update?system=$dd_system&hostname=$dd_hostname&myip=$dd_ip" |  awk '{print $1}')"
 }
 
 printMessage() {
@@ -148,7 +148,7 @@ main() {
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.2"
+APPVERSION="0.2.3"
 
 CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 LOG_FILE="#LOGDIR#/$APPNAME.log"
@@ -157,6 +157,8 @@ DD_IP=""
 DD_RETCODE=""
 
 VERBOSE=0
+
+export PATH=$PATH:#PATH_ENV#
 
 checkRoot
 main $@ 2>&1 | writeLog

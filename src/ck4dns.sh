@@ -55,10 +55,12 @@ main() {
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.2"
+APPVERSION="0.2.3"
 
 CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 DYNDNSUP_BIN="#DYNDNSUP#"
+
+export PATH=$PATH:#PATH_ENV#
 
 main $@ 2>&1
 
