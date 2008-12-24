@@ -63,7 +63,8 @@ updateIP() {
   local dd_system="$4"
   local dd_hostname="$5"
   local dd_ip="$6"
-  DD_RETCODE="$(curl -s "http://${dd_user}:${dd_pass}@$dd_server/nic/update?system=$dd_system&hostname=$dd_hostname&myip=$dd_ip" |  awk '{print $1}')"
+  local dd_wildcard="$6"
+  DD_RETCODE="$(curl -s "http://${dd_user}:${dd_pass}@$dd_server/nic/update?system=$dd_system&hostname=$dd_hostname&myip=$dd_ip&wildcard=$dd_wildcard" |  awk '{print $1}')"
 }
 
 printMessage() {
@@ -142,13 +143,13 @@ main() {
   [ ! -r "$CONFIG_FILE" ] && msgError "can't read config file '$CONFIG_FILE'"
   . $CONFIG_FILE
   [ ! -z "$DD_IP" ] && getIP $DD_IFACE
-  updateIP "$DD_USERNAME" "$DD_PASSWORD" \
-           "$DD_SERVER" "$DD_SYSTEM" "$DD_HOSTNAME" "$DD_IP"
+  updateIP "$DD_USERNAME" "$DD_PASSWORD" "$DD_SERVER" "$DD_SYSTEM" \
+           "$DD_HOSTNAME" "$DD_IP" "$DD_WILDCARD"
   printMessage $DD_RETCODE
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.3"
+APPVERSION="0.2.4"
 
 CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 LOG_FILE="#LOGDIR#/$APPNAME.log"
