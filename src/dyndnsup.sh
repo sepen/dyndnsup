@@ -26,7 +26,7 @@ msgError() {
 }
 
 msgUsage() {
-  echo "Usage: $APPNAME [-h] | [-v] | [-c file] | [-f ipv4]"
+  echo "Usage: $APPNAME [ -h | -c file | -f ipv4 ]"
   echo "Read the manual for futher information: $APPNAME(1)"
   exit 0
 }
@@ -64,6 +64,7 @@ updateIP() {
   local dd_hostname="$5"
   local dd_ip="$6"
   local dd_wildcard="$6"
+  # TODO: check parameters before trying to obtain a retcode
   DD_RETCODE="$(curl -s "http://${dd_user}:${dd_pass}@$dd_server/nic/update?system=$dd_system&hostname=$dd_hostname&myip=$dd_ip&wildcard=$dd_wildcard" |  awk '{print $1}')"
 }
 
@@ -128,13 +129,13 @@ printMessage() {
 writeLog() {
   local date="$(date +'%D %T')"
   echo -ne "[$date] " >>$LOG_FILE
-  cat - >>$LOG_FILE
+  cat - | tr '\n' ' ' >>$LOG_FILE
+  echo >>$LOG_FILE
 }
 
 main() {
   if [ $# -gt 0 ]; then
     case $1 in
-      -v) VERBOSE=1 ;;
       -c) CONFIG_FILE="$2" ;;
       -f) DD_IP="$2" ;;
        *) msgUsage ;;
@@ -145,24 +146,22 @@ main() {
   [ ! -z "$DD_IP" ] && getIP $DD_IFACE
   updateIP "$DD_USERNAME" "$DD_PASSWORD" "$DD_SERVER" "$DD_SYSTEM" \
            "$DD_HOSTNAME" "$DD_IP" "$DD_WILDCARD"
+  printMessage $DD_RETCODE | writeLog
   printMessage $DD_RETCODE
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.4"
+APPVERSION="0.2.5"
 
-CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
+CONFIG_FILE="#ETCDIR#/dyndnsup/$APPNAME.conf"
 LOG_FILE="#LOGDIR#/$APPNAME.log"
 
 DD_IP=""
 DD_RETCODE=""
 
-VERBOSE=0
-
-export PATH=$PATH:#PATH_ENV#
+export PATH=$PATH:#PATH#
 
 checkRoot
-main $@ 2>&1 | writeLog
-[ $VERBOSE -eq 1 ] && printMessage $DD_RETCODE
+main $@
 
 # End of File
