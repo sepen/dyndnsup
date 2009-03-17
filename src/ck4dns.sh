@@ -55,7 +55,7 @@ main() {
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.3"
+APPVERSION="0.2.5.1"
 
 CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 DYNDNSUP_BIN="#DYNDNSUP#"

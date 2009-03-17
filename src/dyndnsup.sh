@@ -63,7 +63,7 @@ updateIP() {
   local dd_system="$4"
   local dd_hostname="$5"
   local dd_ip="$6"
-  local dd_wildcard="$6"
+  local dd_wildcard="$7"
   # TODO: check parameters before trying to obtain a retcode
   DD_RETCODE="$(curl -s "http://${dd_user}:${dd_pass}@$dd_server/nic/update?system=$dd_system&hostname=$dd_hostname&myip=$dd_ip&wildcard=$dd_wildcard" |  awk '{print $1}')"
 }
@@ -151,7 +151,7 @@ main() {
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.5"
+APPVERSION="0.2.5.1"
 
 CONFIG_FILE="#ETCDIR#/dyndnsup/$APPNAME.conf"
 LOG_FILE="#LOGDIR#/$APPNAME.log"
