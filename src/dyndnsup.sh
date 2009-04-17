@@ -157,6 +157,7 @@ main() {
        *) msgUsage ;;
     esac
   fi
+  checkRoot
   [ ! -r "$CONFIG_FILE" ] && msgError "can't read config file '$CONFIG_FILE'"
   . "$CONFIG_FILE"
   [ -z "$DD_IP" ] && getIP "$DD_IFACE"
@@ -177,7 +178,6 @@ DD_RETCODE=""
 
 export PATH=$PATH:#PATH#
 
-checkRoot
 main $@
 
 # End of File
