@@ -26,8 +26,13 @@ msgError() {
 }
 
 msgUsage() {
-  echo "Usage: $APPNAME [ -h | -c file | -f ipv4 ]"
+  echo "Usage: $APPNAME [options]"
   echo "Read the manual for futher information: $APPNAME(1)"
+  exit 0
+}
+
+msgVersion() {
+  echo "$APPNAME v$APPVERSION by Jose V Beneyto, <sepen@users.sourceforge.net>"
   exit 0
 }
 
@@ -53,7 +58,7 @@ getIP() {
       msgError "platform $platform is not yet supported"
       ;;
   esac
-	DD_IP=$ip
+  DD_IP=$ip
 }
 
 updateIP() {
@@ -65,7 +70,9 @@ updateIP() {
   local dd_ip="$6"
   local dd_wildcard="$7"
   # TODO: check parameters before trying to obtain a retcode
-  DD_RETCODE="$(curl -s "http://${dd_user}:${dd_pass}@$dd_server/nic/update?system=$dd_system&hostname=$dd_hostname&myip=$dd_ip&wildcard=$dd_wildcard" |  awk '{print $1}')"
+  local url="http://${dd_user}:${dd_pass}@${dd_server}/nic/update?"
+  local req="system=${dd_system}&hostname=${dd_hostname}&myip=${dd_ip}&wildcard=${dd_wildcard}"
+  DD_RETCODE="$(curl -s ${url}${req} |  awk '{print $1}')"
 }
 
 printMessage() {
@@ -136,14 +143,23 @@ writeLog() {
 main() {
   if [ $# -gt 0 ]; then
     case $1 in
-      -c) CONFIG_FILE="$2" ;;
-      -f) DD_IP="$2" ;;
+      -v|--version) msgVersion ;;
+      -c|--config)
+        [ -z "$2" ] && msgUsage
+        CONFIG_FILE="$2"
+        case $3 in
+          -f|--forceip)
+            [ -z "$4" ] && msgUsage
+            DD_IP="$4"
+            ;;
+        esac
+        ;;
        *) msgUsage ;;
     esac
   fi
   [ ! -r "$CONFIG_FILE" ] && msgError "can't read config file '$CONFIG_FILE'"
-  . $CONFIG_FILE
-  [ ! -z "$DD_IP" ] && getIP $DD_IFACE
+  . "$CONFIG_FILE"
+  [ -z "$DD_IP" ] && getIP "$DD_IFACE"
   updateIP "$DD_USERNAME" "$DD_PASSWORD" "$DD_SERVER" "$DD_SYSTEM" \
            "$DD_HOSTNAME" "$DD_IP" "$DD_WILDCARD"
   printMessage $DD_RETCODE | writeLog
@@ -151,9 +167,9 @@ main() {
 }
 
 APPNAME="$(basename $0)"
-APPVERSION="0.2.5.1"
+APPVERSION="0.2.6"
 
-CONFIG_FILE="#ETCDIR#/dyndnsup/$APPNAME.conf"
+CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 LOG_FILE="#LOGDIR#/$APPNAME.log"
 
 DD_IP=""

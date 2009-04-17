@@ -1,36 +1,34 @@
-.TH dyndnsup 1 LOCAL
+.TH dyndnsup 1 "April 2009" "dyndnsup 0.2.6" ""
 
 .SH NAME
-
-dyndnsup - Auto-update dynamic dns service
+dyndnsup \- Auto-update dynamic dns service
 
 .SH SYNOPSIS
-
-.B dyndnsup
-.RB [ -v ]
-|
-.RB [ -h ]
-|
-.RB [ -c 
-.IR file ]
+dyndnsup [options]
 
 .SH OPTIONS
 
-.TP 9
-.B -v
+.TP
+.B -v, --version
 show version string
-.TP 9
-.B -h
+.TP
+.B -h, --help
 show help information
-.TP 4
-.B -c
-.IR file
-specifies the config file to be used
+.TP
+.B -c <file>, --config <file>
+Use alternative configuration from <file> instead of the default #ETCDIR#/dyndnsup.conf 
+.TP
+.B -f <ipv4>, --forceip <ipv4>
+Force update to the given ip instead of the one specified in the config file
+
+.SH EXAMPLES
+dyndnsup -c /etc/dyndnsup/mydomain.conf
+.br
+dyndnsup -c /etc/dyndnsup/anotherdomain.conf -f 81.202.12.34
 
 .SH AVAILABILITY
 
-Teorically all UNIX flavors. Tested in Linux and OpenBSD.
+All UNIX flavors.
 
 .SH AUTHOR
-
-Jose V Beneyto, sepen@users.sourceforge.net
+Jose V Beneyto, <sepen@users.sourceforge.net>
