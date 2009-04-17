@@ -11,6 +11,6 @@ DD_SYSTEM="dyndns"                # dyndns|statdns|custom
 DD_SERVER="members.dyndns.org"    # dynamic dns server
 DD_HOSTNAME="test.dyndns.org"     # account hostname.dyndns.org
 
-DD_WILDCARD="Y"                   # wilcard alias (Y/N)
+DD_WILDCARD="ON"                  # wilcard alias (ON/NOCHG)
 
 # End of File
