@@ -11,7 +11,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 .PHONY: all install clean uninstall
 
-all: dyndnsup dyndnsup.1.gz ck4dns
+all: clean dyndnsup dyndnsup.1.gz ck4dns
 
 dyndnsup: src/dyndnsup.sh
 	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
@@ -19,9 +19,11 @@ dyndnsup: src/dyndnsup.sh
 			 -e "s|#LOGDIR#|$(LOGDIR)|g" \
 			 -e "s|#PATH#|$(PATH)|g" \
 			 src/dyndnsup.sh > dyndnsup
+	@chmod +x dyndnsup
 
 dyndnsup.1.gz:
-	@cp src/dyndnsup.1 .; gzip -9 dyndnsup.1
+	@sed -e "s|#ETCDIR#|$(ETCDIR)|g" src/dyndnsup.1 > dyndnsup.1
+	@gzip -9 dyndnsup.1
 
 ck4dns: src/ck4dns.sh
 	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
@@ -29,6 +31,7 @@ ck4dns: src/ck4dns.sh
 			 -e "s|#DYNDNSUP#|$(DESTDIR)$(BINDIR)/dyndnsup|g" \
 			 -e "s|#PATH_ENV#|$(PATH)|g" \
 			 src/ck4dns.sh > ck4dns
+	@chmod +x dyndnsup
 
 install: dyndnsup dyndnsup.1.gz ck4dns
 	@install -d $(DESTDIR)$(BINDIR)
