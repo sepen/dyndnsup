@@ -1,4 +1,4 @@
-.TH dyndnsup 1 "April 2009" "dyndnsup 0.2.6" ""
+.TH dyndnsup 1 "April 2009" "dyndnsup #APPVERSION#" ""
 
 .SH NAME
 dyndnsup \- Auto-update dynamic dns service
@@ -18,6 +18,9 @@ show help information
 .B -c <file>, --config <file>
 Use alternative configuration from <file> instead of the default #ETCDIR#/dyndnsup.conf 
 .TP
+.B -l <file>, --log <file>
+Log every printed message to a <file> instead of use stdout
+.TP
 .B -f <ipv4>, --forceip <ipv4>
 Force update to the given ip instead of the one specified in the config file
 
@@ -31,4 +34,4 @@ dyndnsup -c ~/mydomain.conf -f 81.202.12.34
 All UNIX flavors.
 
 .SH AUTHOR
-Jose V Beneyto, <sepen@users.sourceforge.net>
+Jose V Beneyto, <sepen@crux.nu>

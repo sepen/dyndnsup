@@ -2,15 +2,12 @@
 # dyndnsup.conf
 #
 
-DD_IFACE="eth0"                   # network interface to use
-
-DD_USERNAME="test"                # account username 
-DD_PASSWORD="test"                # account password
-
-DD_SYSTEM="dyndns"                # dyndns|statdns|custom
-DD_SERVER="members.dyndns.org"    # dynamic dns server
-DD_HOSTNAME="test.dyndns.org"     # account hostname.dyndns.org
-
-DD_WILDCARD="ON"                  # wilcard alias (ON/NOCHG)
+DDUP_IFACE="eth0"                   # network interface to use
+DDUP_USER="test"                    # account username
+DDUP_PASS="test"                    # account password
+DDUP_SYSTEM="dyndns"                # dyndns|statdns|custom
+DDUP_SERVER="members.dyndns.org"    # dynamic dns server
+DDUP_HOSTNAME="test.dyndns.org"     # account hostname.dyndns.org
+DDUP_WILDCARD="ON"                  # wilcard alias (ON/NOCHG)
 
 # End of File

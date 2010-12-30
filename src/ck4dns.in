@@ -54,13 +54,13 @@ main() {
   done < $CONFIG_FILE
 }
 
-APPNAME="$(basename $0)"
-APPVERSION="0.2.5.1"
+APPNAME="ck4dns"
+APPVERSION="#APPVERSION#"
 
 CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 DYNDNSUP_BIN="#DYNDNSUP#"
 
-export PATH=$PATH:#PATH_ENV#
+export LANG=C PATH=$PATH:#PATH#
 
 main $@ 2>&1
 

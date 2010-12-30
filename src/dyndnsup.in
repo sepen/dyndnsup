@@ -1,0 +1,236 @@
+#!#SHEBANG#
+#
+# Copyright (c) 2008 by Jose V. Beneyto, sepen at crux dot nu
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+ddup_msgError() {
+  echo "Error, $@" 2>&1
+  exit 1
+}
+
+ddup_msgUsage() {
+  echo "Usage: $APPNAME [options]"
+  echo "Read the manual for further information: $APPNAME(1)"
+  exit 0
+}
+
+ddup_msgVersion() {
+  echo "$APPNAME v$APPVERSION by Jose V Beneyto, <sepen@crux.nu>"
+  exit 0
+}
+
+ddup_checkUID() {
+  [ "$(id -u)" != "0" ] && ddup_msgError "you need to be root to do this"
+}
+
+ddup_checkConfigFile() {
+  # check if readable
+  if [ ! -r "$DDUP_CONFIG_FILE" ]; then
+    ddup_msgError "config file '$DDUP_CONFIG_FILE' is not readable"
+  fi
+  # include contents
+  . "$DDUP_CONFIG_FILE"
+  # check for non empty variables (except DDUP_IP)
+  if [ -z "$DDUP_IFACE" ] || [ -z "$DDUP_USER" ] || [ -z "$DDUP_PASS" ] \
+  || [ -z "$DDUP_SYSTEM" ] || [ -z "$DDUP_SERVER" ] || \
+  || [ -z "$DDUP_HOSTNAME" ] || [ -z "$DDUP_WILDCARD" ]; then
+    ddup_msgError "please check and fix the config file '$DDUP_CONFIG_FILE'"
+  fi
+}
+
+ddup_checkLogFile() {
+  # check if writable
+  if [ ! -w "$DDUP_LOG_FILE" ]; then
+    ddup_msgError "log file '$DDUP_CONFIG_FILE' is not writable"
+  fi
+}
+
+ddup_obtainIP() {
+  local platform="$(uname)"
+  local ip=
+  case $platform in
+    Linux)
+      ip="$(ifconfig $DDUP_IFACE | grep 'inet addr' | awk '{print $2}' | sed -e 's/.*://')"
+      ;;
+    OpenBSD|SunOS)
+      ip="$(ifconfig $DDUP_IFACE | grep 'inet ' | awk '{print $2}')"
+      ;;
+    *)
+      msgError "platform $platform is not yet supported"
+      ;;
+  esac
+  DD_IP=$ip
+}
+
+ddup_checkIP() {
+  # check for external and valid ip
+  local ip="$(curl -s http://checkip.dyndns.org/ | tr '>' '\n' | tr '<' '\n' \
+  | grep 'Current IP Address:' | cut -d':' -f2 | sed 's| ||g')"
+  [ "$DDUP_IP" != "ip" ] && ddup_msgError "IP to update differs from your external IP: $ip"
+}
+
+ddup_updateIP() {
+  local url="http://${DDUP_USER}:${DDUP_PASS}@${DDUP_SERVER}/nic/update?"
+  local req="system=${DDUP_SYSTEM}&hostname=${DDUP_HOSTNAME}&myip=${DDUP_IP}&wildcard=${DDUP_WILDCARD}"
+  DD_RETCODE="$(curl -s ${url}${req} |  awk '{print $1}')"
+}
+
+ddup_printRetMessage() {
+  [ -z "$DDUP_CODE" ] && ddup_msgError "no return code, update will not take effects!"
+  case $DDUP_CODE in
+    # update syntax errors
+    badsys)
+      echo "The system parameter given is not valid."
+      echo "Valid system parameters are dyndns, statdns and custom."
+      ;;
+    badagent)
+      echo "The user agent that was sent has been blocked for not"
+      echo "following these specifications, or no user agent was specified."
+      ;;
+    # account-related errors
+    badauth)
+      echo "The username or password specified are incorrect."
+      ;;
+    !donator)
+      echo "An option available only to credited users (such as offline URL)"
+      echo "was specified, but the user is not a credited user. If multiple hosts"
+      echo "were specified, only a single !donator will be returned."
+      ;;
+    # update complete
+    good)
+      echo "The update was successful, and the hostname is now updated."
+      ;;
+    nochg)
+      echo "The update changed no settings, and is considered abusive."
+      echo "Additional nochg updates will cause the hostname to become blocked."
+      ;;
+    # hostname-related errors
+    notfqdn)
+      echo "The hostname specified is not a fully-qualified domain name"
+      echo "(not in the form hostname.dyndns.org or domain.com)."
+      ;;
+    nohost)
+      echo "The hostname specified does not exist (or is not in the service"
+      echo "specified in the system parameter)"
+      ;;
+    !yours)
+      echo "The hostname specified exists, but not under the username specified."
+      ;;
+    numhost)
+      echo "Too many or too few hosts found"
+      ;;
+    abuse)
+      echo "The hostname specified is blocked for update abuse."
+      ;;
+    # server error conditions
+    dnserr)
+      echo "DNS error encountered"
+      ;;
+    911)
+      echo "There is a serious problem on our side, such as a database or DNS server failure."
+      ;;
+  esac
+}
+
+ddup_appendToLog() {
+  local date="$(date +'%D %T')"
+  echo -ne "[$date] " >> $DDUP_LOG_FILE
+  cat - | tr '\n' ' ' >> $DDUP_LOG_FILE
+  echo >> $DDUP_LOG_FILE
+}
+
+ddup_main() {
+  # check for input arguments
+  if [ $# -gt 0 ]; then
+    for arg in $@; do
+      case $1 in
+        -c|--config)
+          [ -z "$2" ] && ddup_msgUsage
+          DDUP_CONFIG_FILE="$2"
+          shift
+          ;;
+        -l|--log)
+          [ -z "$2" ] && ddup_msgUsage
+          DDUP_OPTION_LOG=1
+          DDUP_LOG_FILE="$2"
+          shift
+          ;;
+        -f|--forceip)
+          [ -z "$2" ] && ddup_msgUsage
+          DDUP_OPTION_FORCEIP=1
+          DDUP_IP="$2"
+          shift
+          ;;
+        -v|--version)
+          ddup_msgVersion
+          ;;
+        *)
+          ddup_msgUsage
+          ;;
+      esac
+      shift
+    done
+  else
+    ddup_msgUsage
+  fi
+  # check user command privileges
+  ddup_checkUID
+  # check config file permissions and validate their contents
+  ddup_checkConfigFile
+  # if enabled then check log file permissions
+  [ $DDUP_OPTION_LOG -eq 1 ] && ddup_checkLogFile
+  # if not enabled then obtain IP value
+  [ $DDUP_OPTION_FORCEIP -eq 0 ] && ddup_obtainIP
+  # if not enabled then check IP value
+  [ $DDUP_OPTION_FORCEIP -eq 0 ] && ddup_checkIP
+  # go to update process
+  ddup_updateIP
+  # print result message, but if enabled then log result message
+  if [ $DDUP_OPTION_LOG -eq 0 ]; then
+    ddup_printRetMessage
+  else
+    ddup_printRetMessage | ddup_appendToLog
+  fi
+}
+
+readonly APPNAME="dyndnsup"
+readonly APPVERSION="#APPVERSION#"
+
+DDUP_CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
+DDUP_LOG_FILE="#LOGDIR#/$APPNAME.log"
+
+DDUP_OPTION_FORCEIP=0
+DDUP_OPTION_LOG=0
+
+DDUP_USER=
+DDUP_PASS=
+DDUP_SERVER=
+DDUP_SYSTEM=
+DDUP_HOSTNAME=
+DDUP_IP=
+DDUP_WILDCARD=
+
+DDUP_RETCODE=
+
+export LANG=C PATH=$PATH:#PATH#
+
+ddup_main $@
+
+# End of File
