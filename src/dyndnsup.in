@@ -97,8 +97,8 @@ ddup_updateIP() {
 }
 
 ddup_printRetMessage() {
-  [ -z "$DDUP_CODE" ] && ddup_msgError "no return code, update will not take effects!"
-  case $DDUP_CODE in
+  [ -z "$DDUP_RETCODE" ] && ddup_msgError "no return code, update will not take effects!"
+  case $DDUP_RETCODE in
     # update syntax errors
     badsys)
       echo "The system parameter given is not valid."
