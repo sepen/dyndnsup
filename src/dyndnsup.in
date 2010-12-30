@@ -56,6 +56,11 @@ ddup_checkConfigFile() {
 }
 
 ddup_checkLogFile() {
+  # check if file exists
+  if [ ! -e "$DDUP_LOG_FILE" ]; then
+    touch $DDUP_LOG_FILE
+    chmod +w $DDUP_LOG_FILE
+  fi
   # check if writable
   if [ ! -w "$DDUP_LOG_FILE" ]; then
     ddup_msgError "log file '$DDUP_CONFIG_FILE' is not writable"
