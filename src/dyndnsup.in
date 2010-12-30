@@ -82,12 +82,14 @@ ddup_obtainIP() {
       ;;
   esac
   DDUP_IP=$ip
-  DDUP_EXTIP="$(curl -s http://checkip.dyndns.org/ | tr '>' '\n' | tr '<' '\n' \
+  DDUP_EXTERNAL_IP="$(curl -s http://checkip.dyndns.org/ | tr '>' '\n' | tr '<' '\n' \
   | grep 'Current IP Address:' | cut -d':' -f2 | sed 's| ||g')"
 }
 
 ddup_checkIP() {
-  [ "$DDUP_IP" != "$DDUP_EXTIP" ] && ddup_msgError "$DDUP_IP differs from your external ip ($DDUP_EXTIP)"
+  if [ "$DDUP_IP" != "$DDUP_EXTERNAL_IP" ]; then
+    ddup_msgError "$DDUP_IP differs from your external ip ($DDUP_EXTERNAL_IP)"
+  fi
 }
 
 ddup_updateIP() {
