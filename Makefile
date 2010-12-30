@@ -2,7 +2,7 @@
 # Makefile
 #
 
-DYNDNSUP_VERSION="0.3-test"
+DYNDNSUP_VERSION="0.3"
 
 DESTDIR=
 BINDIR=/usr/bin
@@ -24,20 +24,20 @@ dyndnsup.1.gz: src/dyndnsup.1.in
 
 dyndnsup: src/dyndnsup.in dyndnsup.1.gz
 	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
-			 -e "s|#ETCDIR#|$(ETCDIR)|g" \
-			 -e "s|#LOGDIR#|$(LOGDIR)|g" \
-			 -e "s|#PATH#|$(PATH)|g" \
-			-e "s|#APPVERSION#|$(DYNDNSUP_VERSION)|g" \
-			 src/dyndnsup.in > dyndnsup
+		-e "s|#ETCDIR#|$(ETCDIR)|g" \
+		-e "s|#LOGDIR#|$(LOGDIR)|g" \
+		-e "s|#PATH#|$(PATH)|g" \
+		-e "s|#APPVERSION#|$(DYNDNSUP_VERSION)|g" \
+		src/dyndnsup.in > dyndnsup
 	@chmod +x dyndnsup
 
 ck4dns: src/ck4dns.in
 	@sed -e "s|#SHEBANG#|$(SHEBANG)|" \
-			 -e "s|#ETCDIR#|$(ETCDIR)|g" \
-			 -e "s|#DYNDNSUP#|$(DESTDIR)$(BINDIR)/dyndnsup|g" \
-			 -e "s|#PATH#|$(PATH)|g" \
-			 -e "s|#APPVERSION#|$(DYNDNSUP_VERSION)|g" \
-			 src/ck4dns.in > ck4dns
+		-e "s|#ETCDIR#|$(ETCDIR)|g" \
+		-e "s|#DYNDNSUP#|$(DESTDIR)$(BINDIR)/dyndnsup|g" \
+		-e "s|#PATH#|$(PATH)|g" \
+		-e "s|#APPVERSION#|$(DYNDNSUP_VERSION)|g" \
+		src/ck4dns.in > ck4dns
 	@chmod +x ck4dns
 
 install: dyndnsup ck4dns
@@ -49,6 +49,7 @@ install: dyndnsup ck4dns
 	@install -m 0600 src/*.conf.sample $(DESTDIR)$(ETCDIR)
 	@install -d $(DESTDIR)$(MANDIR)/man1
 	@install -m 0644 *.1.gz $(DESTDIR)$(MANDIR)/man1
+	@ln -sf dyndnsup.1.gz $(DESTDIR)$(MANDIR)/man1/ddup.1.gz
 
 clean:
 	@rm -f dyndnsup dyndnsup.1.gz ck4dns

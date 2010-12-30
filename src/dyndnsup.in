@@ -36,11 +36,11 @@ ddup_msgVersion() {
   exit 0
 }
 
-ddup_checkUID() {
-  [ "$(id -u)" != "0" ] && ddup_msgError "you need to be root to do this"
-}
-
 ddup_checkConfigFile() {
+  # check if file exists
+  if [ ! -e "$DDUP_CONFIG_FILE" ]; then
+       ddup_msgError "config file '$DDUP_CONFIG_FILE' not exists"
+  fi
   # check if readable
   if [ ! -r "$DDUP_CONFIG_FILE" ]; then
     ddup_msgError "config file '$DDUP_CONFIG_FILE' is not readable"
@@ -49,7 +49,7 @@ ddup_checkConfigFile() {
   . "$DDUP_CONFIG_FILE"
   # check for non empty variables (except DDUP_IP)
   if [ -z "$DDUP_IFACE" ] || [ -z "$DDUP_USER" ] || [ -z "$DDUP_PASS" ] \
-  || [ -z "$DDUP_SYSTEM" ] || [ -z "$DDUP_SERVER" ] || \
+  || [ -z "$DDUP_SYSTEM" ] || [ -z "$DDUP_SERVER" ] \
   || [ -z "$DDUP_HOSTNAME" ] || [ -z "$DDUP_WILDCARD" ]; then
     ddup_msgError "please check and fix the config file '$DDUP_CONFIG_FILE'"
   fi
@@ -83,7 +83,7 @@ ddup_checkIP() {
   # check for external and valid ip
   local ip="$(curl -s http://checkip.dyndns.org/ | tr '>' '\n' | tr '<' '\n' \
   | grep 'Current IP Address:' | cut -d':' -f2 | sed 's| ||g')"
-  [ "$DDUP_IP" != "ip" ] && ddup_msgError "IP to update differs from your external IP: $ip"
+  [ "$DDUP_IP" != "ip" ] && ddup_msgError "$DD_IP differs from your external ip ($ip)"
 }
 
 ddup_updateIP() {
@@ -159,7 +159,7 @@ ddup_appendToLog() {
 ddup_main() {
   # check for input arguments
   if [ $# -gt 0 ]; then
-    for arg in $@; do
+    while [ "$1" ]; do
       case $1 in
         -c|--config)
           [ -z "$2" ] && ddup_msgUsage
@@ -187,11 +187,7 @@ ddup_main() {
       esac
       shift
     done
-  else
-    ddup_msgUsage
   fi
-  # check user command privileges
-  ddup_checkUID
   # check config file permissions and validate their contents
   ddup_checkConfigFile
   # if enabled then check log file permissions

@@ -10,10 +10,10 @@ dyndnsup [options]
 
 .TP
 .B -v, --version
-show version string
+Print version string
 .TP
 .B -h, --help
-show help information
+Print help information
 .TP
 .B -c <file>, --config <file>
 Use alternative configuration from <file> instead of the default #ETCDIR#/dyndnsup.conf 
@@ -25,9 +25,12 @@ Log every printed message to a <file> instead of use stdout
 Force update to the given ip instead of the one specified in the config file
 
 .SH EXAMPLES
+ddup -f 81.202.12.34 -l /tmp/ddup.log
+.br
 dyndnsup -c /etc/dyndnsup/mydomain.conf
 .br
 dyndnsup -c ~/mydomain.conf -f 81.202.12.34
+.br
 
 .SH AVAILABILITY
 
