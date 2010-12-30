@@ -21,8 +21,11 @@ Use alternative configuration from <file> instead of the default #ETCDIR#/dyndns
 .B -l <file>, --log <file>
 Log every printed message to a <file> instead of use stdout
 .TP
-.B -f <ipv4>, --forceip <ipv4>
+.B -f <ipv4>, --force-ip <ipv4>
 Force update to the given ip instead of the one specified in the config file
+.TP
+.B -e, --external-ip
+Force to use the external detected ip
 
 .SH EXAMPLES
 ddup -f 81.202.12.34 -l /tmp/ddup.log
@@ -30,6 +33,8 @@ ddup -f 81.202.12.34 -l /tmp/ddup.log
 dyndnsup -c /etc/dyndnsup/mydomain.conf
 .br
 dyndnsup -c ~/mydomain.conf -f 81.202.12.34
+.br
+ddup -e -l ~/.ddup.log
 .br
 
 .SH AVAILABILITY

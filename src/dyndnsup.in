@@ -76,20 +76,19 @@ ddup_obtainIP() {
       msgError "platform $platform is not yet supported"
       ;;
   esac
-  DD_IP=$ip
+  DDUP_IP=$ip
+  DDUP_EXTIP="$(curl -s http://checkip.dyndns.org/ | tr '>' '\n' | tr '<' '\n' \
+  | grep 'Current IP Address:' | cut -d':' -f2 | sed 's| ||g')"
 }
 
 ddup_checkIP() {
-  # check for external and valid ip
-  local ip="$(curl -s http://checkip.dyndns.org/ | tr '>' '\n' | tr '<' '\n' \
-  | grep 'Current IP Address:' | cut -d':' -f2 | sed 's| ||g')"
-  [ "$DDUP_IP" != "ip" ] && ddup_msgError "$DD_IP differs from your external ip ($ip)"
+  [ "$DDUP_IP" != "$DDUP_EXTIP" ] && ddup_msgError "$DDUP_IP differs from your external ip ($DDUP_EXTIP)"
 }
 
 ddup_updateIP() {
   local url="http://${DDUP_USER}:${DDUP_PASS}@${DDUP_SERVER}/nic/update?"
   local req="system=${DDUP_SYSTEM}&hostname=${DDUP_HOSTNAME}&myip=${DDUP_IP}&wildcard=${DDUP_WILDCARD}"
-  DD_RETCODE="$(curl -s ${url}${req} |  awk '{print $1}')"
+  DDUP_RETCODE="$(curl -s ${url}${req} |  awk '{print $1}')"
 }
 
 ddup_printRetMessage() {
@@ -172,11 +171,14 @@ ddup_main() {
           DDUP_LOG_FILE="$2"
           shift
           ;;
-        -f|--forceip)
+        -f|--force-ip)
           [ -z "$2" ] && ddup_msgUsage
-          DDUP_OPTION_FORCEIP=1
+          DDUP_OPTION_FORCE_IP=1
           DDUP_IP="$2"
           shift
+          ;;
+        -e|--external-ip)
+          DDUP_OPTION_EXTERNAL_IP=1
           ;;
         -v|--version)
           ddup_msgVersion
@@ -190,12 +192,21 @@ ddup_main() {
   fi
   # check config file permissions and validate their contents
   ddup_checkConfigFile
-  # if enabled then check log file permissions
-  [ $DDUP_OPTION_LOG -eq 1 ] && ddup_checkLogFile
-  # if not enabled then obtain IP value
-  [ $DDUP_OPTION_FORCEIP -eq 0 ] && ddup_obtainIP
-  # if not enabled then check IP value
-  [ $DDUP_OPTION_FORCEIP -eq 0 ] && ddup_checkIP
+  # if option_log is not enabled then check log file permissions
+  if [ $DDUP_OPTION_LOG -eq 1 ]; then
+    ddup_checkLogFile
+  fi
+  # if option force_ip is not enabled then obtain IP values (DDUP_IP and DDUP_EXTERNAL_IP)
+  if [ $DDUP_OPTION_FORCE_IP -eq 0 ]; then
+    ddup_obtainIP
+    # if option external_ip is not enabled then check if IP values differs
+    if [ $DDUP_OPTION_EXTERNAL_IP -eq 0 ]; then
+      ddup_checkIP
+    # if option external_ip is enabled then use the external ip for the update
+    else
+      DDUP_IP=$DDUP_EXTERNAL_IP
+    fi
+  fi
   # go to update process
   ddup_updateIP
   # print result message, but if enabled then log result message
@@ -212,7 +223,8 @@ readonly APPVERSION="#APPVERSION#"
 DDUP_CONFIG_FILE="#ETCDIR#/$APPNAME.conf"
 DDUP_LOG_FILE="#LOGDIR#/$APPNAME.log"
 
-DDUP_OPTION_FORCEIP=0
+DDUP_OPTION_FORCE_IP=0
+DDUP_OPTION_EXTERNAL_IP=0
 DDUP_OPTION_LOG=0
 
 DDUP_USER=
@@ -224,6 +236,7 @@ DDUP_IP=
 DDUP_WILDCARD=
 
 DDUP_RETCODE=
+DDUP_EXTERNAL_IP=
 
 export LANG=C PATH=$PATH:#PATH#
 

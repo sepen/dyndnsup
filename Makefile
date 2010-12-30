@@ -9,7 +9,7 @@ BINDIR=/usr/bin
 ETCDIR=/etc/dyndnsup
 MANDIR=/usr/share/man
 LOGDIR=/var/log
-SHEBANG=/bin/sh
+SHEBANG=/bin/bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 .PHONY: all install clean uninstall
